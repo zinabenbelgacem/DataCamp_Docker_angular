@@ -4,7 +4,7 @@ pipeline {
         jdk 'JDK11'  // Remplacer 'JDK8' par 'JDK11'
     }
     environment {
-        JAVA_HOME = '/usr/lib/jvm/java-11-openjdk-amd64'  // Change selon ton environnement
+        JAVA_HOME = 'C:/Program Files/Java/jdk-11 ' 
         DOCKER_TAG = getVersion()
     }
     stages {
