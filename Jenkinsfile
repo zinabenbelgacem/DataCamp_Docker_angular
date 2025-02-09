@@ -1,66 +1,39 @@
 pipeline {
     agent any
-    tools {
-        jdk 'JDK11'
-    }
+    tools{ jdk 'JDK11' } 
     environment {
-        JAVA_HOME = 'C:/Program Files/Java/jdk-11'  // Corriger l'espace
-        DOCKER_TAG = getVersion()
+          JAVA_HOME = 'C:/Program Files/Java/jdk-11' 
+
+        DOCKER_TAG = getVersion()  
     }
     stages {
         stage('Clone Stage') {
             steps {
-                git 'https://gitlab.com/jmlhmd/datacamp_docker_angular.git'
-            }
+                git 'https://gitlab.com/jmlhmd/datacamp_docker_angular.git'             }
         }
         stage('Docker Build') {
             steps {
-                script {
-                    def dockerBuildCmd = "docker build -t zinabenbelgacrm/aston_villa:${DOCKER_TAG} ."
-                    if (isUnix()) {
-                        bat dockerBuildCmd
-                    } else {
-                        bat dockerBuildCmd
-                    }
-                }
-            }
+                bat 'docker build -t zinabenbelgacrm/aston_villa:${DOCKER_TAG} .'              }
         }
         stage('DockerHub Push') {
             steps {
-                withCredentials([usernameColonPassword(credentialsId: '2a030e24-e16b-4dce-8e76-bd90d3da431c', variable: 'DockerHubPwd')]) {
-                    script {
-                        def dockerLoginCmd = "docker login -u zinabenbelgacrm -p ${DockerHubPwd}"
-                        def dockerPushCmd = "docker push zinabenbelgacrm/aston_villa:${DOCKER_TAG}"
-
-                        if (isUnix()) {
-                            bat dockerLoginCmd
-                            bat dockerPushCmd
-                        } else {
-                            bat dockerLoginCmd
-                            bat dockerPushCmd
-                        }
-                    }
+withCredentials([usernameColonPassword(credentialsId: '2a030e24-e16b-4dce-8e76-bd90d3da431c', variable: 'DockerHubPwd')]) {
+                    bat 'sudo docker login -u zinabenbelgacrm -p ${DockerHubPwd}' 
                 }
-            }
+                bat 'sudo docker push zinabenbelgacrm/aston_villa:${DOCKER_TAG}'             }
         }
-        stage('Deploy') {
+         stage('Deploy') {
             steps {
                 sshagent(credentials: ['c864780c-d467-4fd0-9448-da2fbea2a632']) {
-                    script {
-                        def deployCmd = "ssh vagrant@192.168.42.145 'docker run \"aston_villa:${DOCKER_TAG}\"'" // Enlever sudo si pas nécessaire
-                        if (isUnix()) {
-                            sh deployCmd
-                        } else {
-                            bat deployCmd
-                        }
-                    }
+                 bat "ssh vagrant@192.168.42.145"
+              bat "ssh vagrant@192.168.42.145 'sudo docker run \"aston_villa:${DOCKER_TAG}\"'"
                 }
             }
         }
     }
 }
 
-def getVersion() {
-    def version = sh returnStdout: true, script: 'git rev-parse --short HEAD'
-    return version.trim()  // Enlever les espaces ou retours inutiles
+def getVersion(){
+def version = sh returnStdout: true, script: 'git rev-parse --short HEAD'
+return version
 }
