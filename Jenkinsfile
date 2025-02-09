@@ -18,7 +18,7 @@ pipeline {
                 script {
                     def dockerBuildCmd = "docker build -t zinabenbelgacrm/aston_villa:${DOCKER_TAG} ."
                     if (isUnix()) {
-                        sh dockerBuildCmd
+                        bat dockerBuildCmd
                     } else {
                         bat dockerBuildCmd
                     }
@@ -33,8 +33,8 @@ pipeline {
                         def dockerPushCmd = "docker push zinabenbelgacrm/aston_villa:${DOCKER_TAG}"
 
                         if (isUnix()) {
-                            sh dockerLoginCmd
-                            sh dockerPushCmd
+                            bat dockerLoginCmd
+                            bat dockerPushCmd
                         } else {
                             bat dockerLoginCmd
                             bat dockerPushCmd
