@@ -19,9 +19,9 @@ pipeline {
         stage('DockerHub Push') {
             steps {
                 withCredentials([usernameColonPassword(credentialsId: '2a030e24-e16b-4dce-8e76-bd90d3da431c', variable: 'DockerHubPwd')]) {
-                    bat 'sudo docker login -u zinabenbelgacrm -p ${DockerHubPwd}'
+                    bat 'docker docker login -u zinabenbelgacrm -p ${DockerHubPwd}'
                 }
-                bat 'sudo docker push zinabenbelgacrm/aston_villa:${DOCKER_TAG}'
+                bat 'docker docker push zinabenbelgacrm/aston_villa:${DOCKER_TAG}'
             }
         }
         stage('Deploy') {
