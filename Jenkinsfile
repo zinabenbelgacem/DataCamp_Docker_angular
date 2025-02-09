@@ -27,7 +27,7 @@ withCredentials([usernameColonPassword(credentialsId: '2a030e24-e16b-4dce-8e76-b
                 sshagent(credentials: ['c864780c-d467-4fd0-9448-da2fbea2a632']) {
                  sh "ssh vagrant@192.168.42.145"
 //sh "scp target/hello-world-app-1.0-SNAPSHOT.jar vagrant@192.168.1.201:/home/vagrant"
-sh "ssh vagrant@192.168.42.145 ‘sudo docker run “aston_villa:${DOCKER_TAG}"’”
+sh "ssh vagrant@192.168.42.145 'sudo docker run \"aston_villa:${DOCKER_TAG}\"'"
                 }
             }
         }
