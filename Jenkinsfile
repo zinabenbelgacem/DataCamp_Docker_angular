@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    tools{ jdk 'JDK8' } 
+    tools{ jdk 'JDK11' } 
     environment {
           JAVA_HOME = 'C:/Program Files/Java/jdk-11' 
 
