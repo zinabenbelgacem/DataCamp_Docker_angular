@@ -4,7 +4,7 @@ pipeline {
         jdk 'JDK11'
     }
     environment {
-        JAVA_HOME = 'C:/Program Files/Java/jdk-11'  
+        JAVA_HOME = 'C:/Program Files/Java/jdk-11'  // Corriger l'espace
         DOCKER_TAG = getVersion()
     }
     stages {
@@ -62,4 +62,5 @@ pipeline {
 
 def getVersion() {
     def version = sh returnStdout: true, script: 'git rev-parse --short HEAD'
-    return version.trim() 
+    return version.trim()  // Enlever les espaces ou retours inutiles
+}
