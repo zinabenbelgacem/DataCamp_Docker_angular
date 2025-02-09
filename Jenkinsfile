@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools{ jdk 'JDK8' } 
     environment {
-          JAVA_HOME = 'C:\Program Files\Java\jdk-11' 
+          JAVA_HOME = 'C:/Program Files/Java/jdk-11' 
 
         DOCKER_TAG = getVersion()  
     }
