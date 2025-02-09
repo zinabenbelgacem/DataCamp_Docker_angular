@@ -1,10 +1,10 @@
 pipeline {
     agent any
     tools {
-        jdk 'JDK11'  
+        jdk 'JDK11'
     }
     environment {
-        JAVA_HOME = 'C:/Program Files/Java/jdk-11 ' 
+        JAVA_HOME = 'C:/Program Files/Java/jdk-11'  
         DOCKER_TAG = getVersion()
     }
     stages {
@@ -15,21 +15,46 @@ pipeline {
         }
         stage('Docker Build') {
             steps {
-                sh 'docker build -t zinabenbelgacrm/aston_villa:${DOCKER_TAG} .'
+                
+                script {
+                    def dockerBuildCmd = "docker build -t zinabenbelgacrm/aston_villa:${DOCKER_TAG} ."
+                    if (isUnix()) {
+                        sh dockerBuildCmd
+                    } else {
+                        bat dockerBuildCmd
+                    }
+                }
             }
         }
         stage('DockerHub Push') {
             steps {
                 withCredentials([usernameColonPassword(credentialsId: '2a030e24-e16b-4dce-8e76-bd90d3da431c', variable: 'DockerHubPwd')]) {
-                    sh 'sudo docker login -u zinabenbelgacrm -p ${DockerHubPwd}'
+                    script {
+                        def dockerLoginCmd = "docker login -u zinabenbelgacrm -p ${DockerHubPwd}"
+                        def dockerPushCmd = "docker push zinabenbelgacrm/aston_villa:${DOCKER_TAG}"
+
+                        if (isUnix()) {
+                            sh dockerLoginCmd
+                            sh dockerPushCmd
+                        } else {
+                            bat dockerLoginCmd
+                            bat dockerPushCmd
+                        }
+                    }
                 }
-                sh 'sudo docker push zinabenbelgacrm/aston_villa:${DOCKER_TAG}'
             }
         }
         stage('Deploy') {
             steps {
                 sshagent(credentials: ['c864780c-d467-4fd0-9448-da2fbea2a632']) {
-                    sh "ssh vagrant@192.168.42.145 'sudo docker run \"aston_villa:${DOCKER_TAG}\"'"
+                    script {
+                        def deployCmd = "ssh vagrant@192.168.42.145 'docker run \"aston_villa:${DOCKER_TAG}\"'" // Enlever sudo si pas nécessaire
+                        if (isUnix()) {
+                            sh deployCmd
+                        } else {
+                            bat deployCmd
+                        }
+                    }
                 }
             }
         }
@@ -38,5 +63,4 @@ pipeline {
 
 def getVersion() {
     def version = sh returnStdout: true, script: 'git rev-parse --short HEAD'
-    return version
-}
+    return version.trim()  
