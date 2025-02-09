@@ -15,7 +15,6 @@ pipeline {
         }
         stage('Docker Build') {
             steps {
-                
                 script {
                     def dockerBuildCmd = "docker build -t zinabenbelgacrm/aston_villa:${DOCKER_TAG} ."
                     if (isUnix()) {
@@ -63,4 +62,4 @@ pipeline {
 
 def getVersion() {
     def version = sh returnStdout: true, script: 'git rev-parse --short HEAD'
-    return version.trim()  
+    return version.trim() 
