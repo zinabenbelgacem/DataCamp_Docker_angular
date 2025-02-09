@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        jdk 'JDK11'  // Remplacer 'JDK8' par 'JDK11'
+        jdk 'JDK11'  
     }
     environment {
         JAVA_HOME = 'C:/Program Files/Java/jdk-11 ' 
