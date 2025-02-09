@@ -1,40 +1,42 @@
 pipeline {
     agent any
-    tools{ jdk 'JDK11' } 
+    tools {
+        jdk 'JDK11'  // Remplacer 'JDK8' par 'JDK11'
+    }
     environment {
-          JAVA_HOME = 'C:/Program Files/Java/jdk-11' 
-
-        DOCKER_TAG = getVersion()  
+        JAVA_HOME = '/usr/lib/jvm/java-11-openjdk-amd64'  // Change selon ton environnement
+        DOCKER_TAG = getVersion()
     }
     stages {
         stage('Clone Stage') {
             steps {
-                git 'https://gitlab.com/jmlhmd/datacamp_docker_angular.git'             }
+                git 'https://gitlab.com/jmlhmd/datacamp_docker_angular.git'
+            }
         }
         stage('Docker Build') {
             steps {
-                sh 'docker build -t zinabenbelgacrm/aston_villa:${DOCKER_TAG} .'              }
+                sh 'docker build -t zinabenbelgacrm/aston_villa:${DOCKER_TAG} .'
+            }
         }
         stage('DockerHub Push') {
             steps {
-withCredentials([usernameColonPassword(credentialsId: '2a030e24-e16b-4dce-8e76-bd90d3da431c', variable: 'DockerHubPwd')]) {
-                    sh 'sudo docker login -u zinabenbelgacrm -p ${DockerHubPwd}' 
+                withCredentials([usernameColonPassword(credentialsId: '2a030e24-e16b-4dce-8e76-bd90d3da431c', variable: 'DockerHubPwd')]) {
+                    sh 'sudo docker login -u zinabenbelgacrm -p ${DockerHubPwd}'
                 }
-                sh 'sudo docker push zinabenbelgacrm/aston_villa:${DOCKER_TAG}'             }
+                sh 'sudo docker push zinabenbelgacrm/aston_villa:${DOCKER_TAG}'
+            }
         }
-         stage('Deploy') {
+        stage('Deploy') {
             steps {
                 sshagent(credentials: ['c864780c-d467-4fd0-9448-da2fbea2a632']) {
-                 sh "ssh vagrant@192.168.42.145"
-//sh "scp target/hello-world-app-1.0-SNAPSHOT.jar vagrant@192.168.1.201:/home/vagrant"
-sh "ssh vagrant@192.168.42.145 'sudo docker run \"aston_villa:${DOCKER_TAG}\"'"
+                    sh "ssh vagrant@192.168.42.145 'sudo docker run \"aston_villa:${DOCKER_TAG}\"'"
                 }
             }
         }
     }
 }
 
-def getVersion(){
-def version = sh returnStdout: true, script: 'git rev-parse --short HEAD'
-return version
+def getVersion() {
+    def version = sh returnStdout: true, script: 'git rev-parse --short HEAD'
+    return version
 }
