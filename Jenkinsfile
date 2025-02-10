@@ -43,15 +43,6 @@ stage('DockerHub Push') {
 }
 
 
-        stage('DockerHub Push') {
-            steps {
-                withCredentials([string(credentialsId: 'mydockerhubpassword', variable: 'DockerHubPassword')]) {
-                    sh "echo ${DockerHubPassword} | docker login -u zinabenbelgacem --password-stdin" // Use sh for Linux
-                }
-                sh "docker push zinabenbelgacem/aston_villa:${env.DOCKER_TAG}" // Use sh for Linux
-            }
-        }
-
         stage('Deploy') {
             steps {
                 sshagent(credentials: ['Vagrant_ssh']) {
