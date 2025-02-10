@@ -16,7 +16,9 @@ pipeline {
         stage('Set Version') {
             steps {
                 script {
-                    env.DOCKER_TAG = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    // Capture la sortie de la commande et la stocke proprement
+                    def gitCommit = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    env.DOCKER_TAG = gitCommit
                     echo "DOCKER_TAG = ${env.DOCKER_TAG}"
                 }
             }
