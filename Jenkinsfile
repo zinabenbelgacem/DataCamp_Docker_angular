@@ -29,7 +29,7 @@ pipeline {
                 script {
                     def tag = env.DOCKER_TAG
                     echo "Building Docker image with tag: ${tag}"
-                    docker.build("zinabenbelgacem/aston_villa", ".")
+                   bat 'docker build -t "zinabenbelgacem/aston_villa" .'
                 }
             }
         }
