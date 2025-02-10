@@ -1,11 +1,11 @@
 pipeline {
     agent any
     tools { 
-        jdk 'JDK8'
+        jdk 'JDK11'
     }
     environment {
         // JAVA_HOME (si nécessaire)
-        JAVA_HOME = 'C:/Program Files/Java/jdk1.8.0'
+        JAVA_HOME = 'C:/Program Files/Java/jdk-11'
         // Ne pas définir DOCKER_TAG ici, car la fonction getVersion ne peut être exécutée avant le checkout.
     }
     stages {
