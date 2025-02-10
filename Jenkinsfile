@@ -15,15 +15,19 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/zinabenbelgacem/DataCamp_Docker_angular'
             }
         }
-        stage('Set Version') {
-            steps {
-                script {
-                    // Utilisez 'bat' pour Windows et assignez la valeur à l'environnement
-                    env.DOCKER_TAG = bat(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                    echo "Using DOCKER_TAG = ${env.DOCKER_TAG}"
-                }
-            }
+      stage('Set Version') {
+    steps {
+        script {
+            // Sur un agent Linux, vous pouvez utiliser sh :
+            // env.DOCKER_TAG = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+
+            // Sur un agent Windows, utilisez bat :
+            env.DOCKER_TAG = bat(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+            echo "DOCKER_TAG = ${env.DOCKER_TAG}"
         }
+    }
+}
+
         stage('Docker Build') {
             steps {
                 // Utilisez des chaînes en double quotes pour l'interpolation et veillez à laisser un espace avant le point (contexte de build)
