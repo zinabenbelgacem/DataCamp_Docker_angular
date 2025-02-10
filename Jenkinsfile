@@ -27,9 +27,9 @@ sh 'sudo docker push zinabenbelgacrm/aston_villa:${DOCKER_TAG}'
 stage ('Deploy') {
 steps{
 sshagent(credentials: ['Vagrant_ssh']) {
-sh "ssh user@Ip_Recette"
+sh "ssh user@192.168.42.145"
 //sh "scp target/hello-world-app-1.0-SNAPSHOT.jar vagrant@192.168.1.201:/home/vagrant"
-sh "ssh user@Ip_Recette ‘sudo docker run “image_name:${DOCKER_TAG}"’”
+sh "ssh user@192.168.42.145 'sudo docker run “aston_villa:${DOCKER_TAG}"'”
 }
 }
 }
