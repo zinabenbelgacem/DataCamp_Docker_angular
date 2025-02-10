@@ -24,7 +24,10 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                bat "docker build -t zinabenbelgacem/aston_villa:${env.DOCKER_TAG} ."
+                script {
+                    def tag = env.DOCKER_TAG
+                    bat "docker build -t zinabenbelgacem/aston_villa:${tag} ."
+                }
             }
         }
 
