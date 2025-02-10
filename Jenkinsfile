@@ -16,7 +16,6 @@ pipeline {
         stage('Set Version') {
             steps {
                 script {
-                    // ✅ Capture proprement la sortie du commit hash
                     def gitCommit = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                     gitCommit = gitCommit.replaceAll("\r", "").replaceAll("\n", "") // Supprime les sauts de ligne
                     env.DOCKER_TAG = gitCommit
@@ -30,7 +29,7 @@ pipeline {
                 script {
                     def tag = env.DOCKER_TAG
                     echo "Building Docker image with tag: ${tag}"
-                    bat "docker build -t zinabenbelgacem/aston_villa:${tag} ."
+                    docker.build("zinabenbelgacem/aston_villa", ".")
                 }
             }
         }
