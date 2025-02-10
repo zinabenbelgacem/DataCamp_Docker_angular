@@ -13,15 +13,15 @@ git branch: 'main', url: 'https://github.com/zinabenbelgacem/DataCamp_Docker_ang
 }
 stage ('Docker Build') {
 steps {
-bat 'docker build -t zinabenbelgacrm/aston_villa:%DOCKER_TAG% .'
+bat 'docker build -t zinabenbelgacem/aston_villa:%DOCKER_TAG% .'
 }
 }
 stage ('DockerHub Push') {
 steps {
 withCredentials([string(credentialsId: 'mydockerhubpassword', variable: 'DockerHubPassword')]) {
-bat  'sudo docker login -u zinabenbelgacrm -p ${DockerHubPassword}'
+bat  'sudo docker login -u zinabenbelgacem -p ${DockerHubPassword}'
 }
-bat  'sudo docker push zinabenbelgacrm/aston_villa:${DOCKER_TAG}'
+bat  'sudo docker push zinabenbelgacem/aston_villa:${DOCKER_TAG}'
 }
 }
 stage ('Deploy') {
