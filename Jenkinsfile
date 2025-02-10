@@ -1,10 +1,10 @@
 pipeline {
     agent any
     tools { 
-        jdk 'JDK11'
+        jdk 'JDK11' // Ensure JDK is installed and configured on Jenkins
     }
     environment {
-        JAVA_HOME = 'C:/Program Files/Java/jdk-11'
+        JAVA_HOME = '/usr/lib/jvm/java-11-openjdk-amd64' // Correct path for Linux environment
     }
     stages {
         stage('Checkout') {
@@ -16,8 +16,8 @@ pipeline {
         stage('Set Version') {
             steps {
                 script {
-                    def gitCommit = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                    gitCommit = gitCommit.replaceAll("\r", "").replaceAll("\n", "") // Supprime les sauts de ligne
+                    def gitCommit = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim() // Use sh for Linux
+                    gitCommit = gitCommit.replaceAll("\r", "").replaceAll("\n", "") // Remove newline characters
                     env.DOCKER_TAG = gitCommit
                     echo "DOCKER_TAG = ${env.DOCKER_TAG}"
                 }
@@ -29,7 +29,7 @@ pipeline {
                 script {
                     def tag = env.DOCKER_TAG
                     echo "Building Docker image with tag: ${tag}"
-                   bat 'docker build -t "zinabenbelgacem/aston_villa" .'
+                    sh 'docker build -t "zinabenbelgacem/aston_villa" .' // Use sh for Linux
                 }
             }
         }
@@ -37,17 +37,17 @@ pipeline {
         stage('DockerHub Push') {
             steps {
                 withCredentials([string(credentialsId: 'mydockerhubpassword', variable: 'DockerHubPassword')]) {
-                    bat "echo ${DockerHubPassword} | docker login -u zinabenbelgacem --password-stdin"
+                    sh "echo ${DockerHubPassword} | docker login -u zinabenbelgacem --password-stdin" // Use sh for Linux
                 }
-                bat "docker push zinabenbelgacem/aston_villa:${env.DOCKER_TAG}"
+                sh "docker push zinabenbelgacem/aston_villa:${env.DOCKER_TAG}" // Use sh for Linux
             }
         }
 
         stage('Deploy') {
             steps {
                 sshagent(credentials: ['Vagrant_ssh']) {
-                    bat """
-                        ssh user@192.168.42.145 "sudo docker pull zinabenbelgacem/aston_villa:${env.DOCKER_TAG} && sudo docker run -d --name aston_villa_${env.DOCKER_TAG} zinabenbelgacem/aston_villa:${env.DOCKER_TAG}"
+                    sh """
+                    ssh vagrant@192.168.42.145 "sudo docker pull zinabenbelgacem/aston_villa:${env.DOCKER_TAG} && sudo docker run -d --name aston_villa_${env.DOCKER_TAG} zinabenbelgacem/aston_villa:${env.DOCKER_TAG}"
                     """
                 }
             }
