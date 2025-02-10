@@ -8,7 +8,7 @@ DOCKER_TAG = getVersion()
 stages {
 stage ('Clone Stage') {
 steps {
-git 'https://github.com/zinabenbelgacem/DataCamp_Docker_angular'
+git branch: 'main', url: 'https://github.com/zinabenbelgacem/DataCamp_Docker_angular'
 }
 }
 stage ('Docker Build') {
