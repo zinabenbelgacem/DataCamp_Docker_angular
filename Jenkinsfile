@@ -13,26 +13,35 @@ pipeline {
             }
         }
 
-        stage('Set Version') {
-            steps {
-                script {
-                    def gitCommit = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim() // Use sh for Linux
-                    gitCommit = gitCommit.replaceAll("\r", "").replaceAll("\n", "") // Remove newline characters
-                    env.DOCKER_TAG = gitCommit
-                    echo "DOCKER_TAG = ${env.DOCKER_TAG}"
-                }
-            }
+       stage('Set Version') {
+    steps {
+        script {
+            def gitCommit = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+            gitCommit = gitCommit.replaceAll("\r", "").replaceAll("\n", "")
+            env.DOCKER_TAG = gitCommit
+            echo "DOCKER_TAG = ${env.DOCKER_TAG}"
         }
+    }
+}
+stage('Docker Build') {
+    steps {
+        script {
+            def tag = env.DOCKER_TAG
+            echo "Building Docker image with tag: ${tag}"
+            bat 'docker build -t "zinabenbelgacem/aston_villa" .'
+        }
+    }
+}
 
-        stage('Docker Build') {
-            steps {
-                script {
-                    def tag = env.DOCKER_TAG
-                    echo "Building Docker image with tag: ${tag}"
-                    sh 'docker build -t "zinabenbelgacem/aston_villa" .' // Use sh for Linux
-                }
-            }
+stage('DockerHub Push') {
+    steps {
+        withCredentials([string(credentialsId: 'mydockerhubpassword', variable: 'DockerHubPassword')]) {
+            bat "echo ${DockerHubPassword} | docker login -u zinabenbelgacem --password-stdin"
         }
+        bat "docker push zinabenbelgacem/aston_villa:${env.DOCKER_TAG}"
+    }
+}
+
 
         stage('DockerHub Push') {
             steps {
